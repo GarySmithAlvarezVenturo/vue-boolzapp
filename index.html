@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <!-- font -->
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/style.css">
     <title>Boolzap VUE</title>
 </head>
+
 <body>
     <div id="root">
-        
+
         <div class="container">
 
             <!-- left side -->
@@ -42,19 +45,21 @@
                     <div class="search-icon">
                         <i class="fas fa-search"></i>
                     </div>
-                    <input type="text" placeholder="Cerca o inizia una nuova chat">
+                    <input type="text" placeholder="Cerca o inizia una nuova chat" v-model="contactText" @keydown.enter="filteredList()">
                 </div>
                 <div class="contact-list">
-                    <div v-for="(contact, index) in contacts" class="contact">
+                    <div v-for="(contact, index) in contacts" class="contact" 
+                    :class="(index == currentContact ? 'contact-active' : null)" 
+                    @click="setIndexContact(index)">
                         <div class="l-contact">
                             <img :src="contacts[index].avatar" alt="Avatar Contatto">
                             <div class="info">
-                                <div class="contact-name">{{contacts[index].name}}</div>
-                                <div class="last-access">{{contacts[index].messages[0].message}}</div>
+                                <div class="contact-name">{{contact.name}}</div>
+                                <div class="last-message">{{contact.messages.slice(-1)[0].text}}</div>
                             </div>
                         </div>
                         <div class="r-contact">
-                            <div class="message-time">{{contacts[index].messages[0].date}}</div>
+                            <div class="message-time">{{contact.messages.slice(-1)[0].date}}</div>
                         </div>
                     </div>
                 </div>
@@ -65,10 +70,10 @@
             <div id="r-side">
                 <div class="contact-nav">
                     <div class="l-contact-icons">
-                        <img src="img/avatar_1.jpg" alt="Avatar Utente">
+                        <img :src="contacts[currentContact].avatar" alt="Avatar Utente">
                         <div class="contact-info">
-                            <div class="contact-name">Iron Man</div>
-                            <div class="last-access">Ultimo accesso alle ore</div>
+                            <div class="contact-name">{{contacts[currentContact].name}}</div>
+                            <div class="last-access">Ultimo accesso oggi alle ore {{contacts[currentContact].messages.slice(-1)[0].date}}</div>
                         </div>
                     </div>
                     <div class="r-contact-icons">
@@ -78,21 +83,28 @@
                     </div>
                 </div>
                 <div class="message-area">
-
+                    <div
+                    v-for="(message, index) in contacts[currentContact].messages" 
+                    class="message" 
+                    :class="(contacts[currentContact].messages[index].status == 'sent') ? 'message-sent' : 'message-received'" >
+                        {{contacts[currentContact].messages[index].text}}
+                        <span class="message-date">{{contacts[currentContact].messages[index].date}}</span>
+                    </div>
                 </div>
                 <div class="text-controls">
                     <i class="far fa-smile"></i>
-                    <input type="text" placeholder="Scrivi un messaggio">
+                    <input type="text" placeholder="Scrivi un messaggio" v-model="messageText" @keydown.enter="newMessage(currentContact)">
                     <i class="fas fa-microphone"></i>
                 </div>
             </div>
             <!-- /right side -->
 
         </div>
-        
+
     </div>
 
     <!-- my js -->
     <script src="assets/script.js"></script>
 </body>
+
 </html>
