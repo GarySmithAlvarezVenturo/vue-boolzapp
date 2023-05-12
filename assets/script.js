@@ -165,10 +165,10 @@ var app = new Vue(
                 }
             ], 
 
-            currentDate: dayjs().format('DD/MM/YYYY HH:mm:ss'),
-            currentContact : 0,
-            messageText: "",
-            contactText: "",           
+            currentContact: 0,  
+            currentMessage: null,   
+            messageText: "",    
+            search: "",     //campo vuoto ricerca contatti        
         },
         methods: {
              setIndexContact: function(position) {
@@ -189,16 +189,41 @@ var app = new Vue(
                 setTimeout(
                     ()=> {
                         let newReceivedMessage = {
-                            date: this.currentDate,
+                            date: dayjs().format('DD/MM/YYYY HH:mm:ss'),
                             text: "Ok",
                             status: 'received'
                         };
 
-                        this.contacts[contact].messages.push(newReceivedMessage);
+                        this.filteredContacts[contact].messages.push(newReceivedMessage);
 
                     },1000
                 );
             },
+           setIndexMessage: function(position) {
+                this.currentMessage = position
+                return this.currentMessage;
+            },
+
+            removeIndexMessage: function () {
+                this.currentMessage = null;
+                return this.currentMessage;
+            },
+            
+            // Cancellare messaggio
+            deleteMessage: function(position,messagePosition) {
+                this.filteredContacts[position].messages.splice(messagePosition,1);
+            },
+    
         },
+        // function search contact
+        computed: {
+            filteredContacts() {
+                return this.contacts.filter(
+                    element => {
+                        return element.name.toLocaleLowerCase().includes(this.search.toLowerCase());
+                    }
+                );
+            }
+        }
     }
 );
